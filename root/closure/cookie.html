@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright 2010 The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<head>
+  <title>cookie</title>
+  <script src="/closure/goog/base.js"></script>
+  <script>
+    goog.require('goog.array');
+    goog.require('goog.net.cookies');
+  </script>
+  <link rel="stylesheet" href="/root/css/demo.css">
+</head>
+<body>
+<h1>cookie test</h1>
+<script>
+var UNLIMITED_AGE=-1;
+var cookies = goog.net.cookies;
+console.log( cookies );
+
+//console.log( cookies.getKeys() );
+//console.log( cookies.getValues() );
+
+cookies.set('testa', 'A', UNLIMITED_AGE);
+console.log( cookies.get('testa', 'not found' ) );
+
+//console.log( cookies.getKeys() );
+//console.log( cookies.getValues() );
+
+cookies.remove('testa')
+
+//console.log( cookies.getKeys() );
+//console.log( cookies.getValues() );
+
+//console.log( cookies.get('testa', 'not found') );
+
+</script>
+</body>
+</html>
+
