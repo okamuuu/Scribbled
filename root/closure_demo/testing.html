@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>hello</title>
+  <script src="/google-closure-library/closure/goog/base.js"></script>
+  <script>
+    goog.require('goog.dom');
+    goog.require('goog.testing.dom');
+    goog.require('goog.testing.jsunit');
+  </script>
+  <link rel="stylesheet" href="/closure_demo/css/style.css">
+</head>
+<body>
+<h1>Testing.html</h1>
+<p id="paragraph">hoge<br />fuga</p>
+<script>
+    var newHeader = goog.dom.createDom('h1', {'style': 'background-color:#EEE'},
+    'Hello world!');
+
+    var paragraph = goog.dom.getElement('paragraph');
+    console.log(paragraph);
+
+    goog.dom.appendChild(document.body, newHeader);
+
+    function testHello () {
+        assertEquals('Hello', 'Hello');
+        console.log(goog.testing.dom.findTextNode('hoge',paragraph) );
+        assertEquals(goog.testing.dom.findTextNode('hoge',paragraph), 'hoge');
+        goog.testing.dom.assertHtmlContentsMatch('Hello world!',newHeader);
+    }
+</script>
+</body>
+</html>
+
