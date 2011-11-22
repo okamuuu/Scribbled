@@ -2,7 +2,8 @@
 use Plack::Builder;
 builder {
 enable "Plack::Middleware::Static",
-    path => sub {  s!(^/(?:[^.]*)?/?+$)!${1}/index.html! or return qr{^/.+} },
+    # XXX: I don't know about localhost/dir ( last char is not / ).
+    path => sub { s!(.*/$)!${1}/index.html! or return qr{^/.+} },
     root => './root/';
 };
 
