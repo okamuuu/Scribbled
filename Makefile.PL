@@ -2,7 +2,7 @@ use inc::Module::Install;
 name 'Scribbled';
 all_from 'lib/Scribbled.pm';
 
-# requires '';
+requires 'Plack';
 
 tests 't/*.t';
 author_tests 'xt';
