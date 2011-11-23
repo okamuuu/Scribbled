@@ -11,23 +11,91 @@
   <link rel="stylesheet" href="/closure_demo/css/style.css">
 </head>
 <body>
-<h1>Testing.html</h1>
-<p id="paragraph">hoge<br />fuga</p>
+<div id="root"></div>
 <script>
-    var newHeader = goog.dom.createDom('h1', {'style': 'background-color:#EEE'},
-    'Hello world!');
-
-    var paragraph = goog.dom.getElement('paragraph');
-    console.log(paragraph);
-
-    goog.dom.appendChild(document.body, newHeader);
-
-    function testHello () {
+    function testBasicAssertMethods () {
         assertEquals('Hello', 'Hello');
-        console.log(goog.testing.dom.findTextNode('hoge',paragraph) );
-        assertEquals(goog.testing.dom.findTextNode('hoge',paragraph), 'hoge');
-        goog.testing.dom.assertHtmlContentsMatch('Hello world!',newHeader);
+        assertNull(null);
+        assertContains('Text', 'Text should match');
+    
+        var msg = "error:cannnot calculate";
+        var err = assertThrows('throw exception', function() {
+            throw msg;
+        });
+        assertEquals(err, msg);
     }
+
+    // copied from https://github.com/jarib/google-closure-library/blob/master/closure/goog/testing/dom_test.html
+    var root = goog.dom.getElement('root');
+
+    function setUp() {
+        root.innerHTML = '';
+    }
+
+    function testFindNode() {
+        root.innerHTML = 'a<br>b';
+        assertEquals(goog.testing.dom.findTextNode('a', root), root.firstChild);
+        assertEquals(goog.testing.dom.findTextNode('b', root), root.lastChild);
+        assertNull(goog.testing.dom.findTextNode('c', root));
+    }
+
+    function testFindNodeDuplicate() {
+        root.innerHTML = 'c<br>c';
+        assertEquals('Should return first duplicate',
+            goog.testing.dom.findTextNode('c', root), root.firstChild);
+    }
+
+    function findNodeWithHierarchy() {
+        root.innerHTML = '<div>a<p>b<span>c</span>d</p>e</div>';
+/*
+<div>
+    a
+    <p>b<span>c</span>d</p>
+    e
+</div>
+*/
+        assertEquals(goog.dom.TagName.DIV,
+            goog.testing.dom.findTextNode('a', root).parentNode.tagName);
+        assertEquals(goog.dom.TagName.P,
+            goog.testing.dom.findTextNode('b', root).parentNode.tagName);
+        assertEquals(goog.dom.TagName.SPAN,
+            goog.testing.dom.findTextNode('c', root).parentNode.tagName);
+        assertEquals(goog.dom.TagName.P,
+            goog.testing.dom.findTextNode('d', root).parentNode.tagName);
+        assertEquals(goog.dom.TagName.DIV,
+            goog.testing.dom.findTextNode('e', root).parentNode.tagName);
+    }
+
+    function testAssertHtmlContentsMatch() {
+        root.innerHTML='<div>test</div>';
+
+        goog.testing.dom.assertHtmlContentsMatch(
+          '<div>test</div>',
+          root
+        );
+
+        goog.testing.dom.assertHtmlContentsMatch(
+          '<div class="hoge">test</div>',
+          root
+        );
+        
+        var styleErr = assertThrows('Should fail due to mismatched style', function() {
+            goog.testing.dom.assertHtmlContentsMatch(
+            '<div style="color:red;">test</div>',
+            root
+            );
+        });        
+        assertContains('Should have same styles', styleErr.message); 
+
+        var tagErr = assertThrows('Should fail due to mismatched tag', function() {
+            goog.testing.dom.assertHtmlContentsMatch(
+            '<p>test</p>',
+              root
+            );
+        });
+        assertContains('Tag names should match', tagErr.message);
+    }
+
 </script>
 </body>
 </html>
