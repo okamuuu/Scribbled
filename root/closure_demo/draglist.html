@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>draglist</title>
+  <script src="/google-closure-library/closure/goog/base.js"></script>
+  <script>
+    goog.require('goog.dom');
+    goog.require('goog.fx.DragListDirection');
+    goog.require('goog.fx.DragListGroup');
+  </script>
+  <link rel="stylesheet" href="/closure_demo/css/style.css">
+  <style>
+    body {
+      font-family: verdana, sans-serif;
+    }
+
+    .hr_clear {
+      float: none;
+      clear: both;
+      height: 0px;
+      padding: 10px 0px 0px 0px;
+      border: 0px;
+      margin: 0px;
+      visibility: hidden;
+    }
+
+    .horiz1_class {
+      padding: 8px 12px;
+      /* box_height + 2 * (padding + border + margin) =
+         50 + 2 * (5 + 2 + 4) = 72px */
+      height: 72px;
+      width: 288px;
+      border: 2px solid #000000;
+    }
+    .horiz1_class { float: left; }
+
+    .horiz1_class div { float: left; }
+
+    .vert1_class,
+    .vert2_class {
+      padding: 12px 8px;
+      /* box_width + 2 * (padding + border + margin) =
+         50 + 2 * (5 + 2 + 2) = 68px */
+      width: 68px;
+      height: 216px;
+      border: 2px solid #000000;
+    }
+
+    div.red_box,
+    div.yellow_box,
+    div.blue_box,
+    div.purple_box,
+    div.empty_box {
+      width: 50px;
+      height: 50px;
+      padding: 5px;
+      margin: 4px 2px;
+      font-family: verdana, sans-serif;
+      font-size: 36px;
+      font-weight: bold;
+      text-align: center;
+    }
+    div.red_box {
+      border: 2px solid #CC0000;
+      color: #CC0000;
+    }
+    div.yellow_box {
+      border: 2px solid #CCCC00;
+      color: #CCCC00;
+    }
+    div.blue_box {
+      border: 2px solid #0000CC;
+      color: #0000CC;
+    }
+    div.purple_box {
+      border: 2px solid #993399;
+      color: #993399;
+    }
+    div.empty_box {
+      border: 2px solid #333;
+    }
+
+
+    /* The following styles are used in the JS. */
+
+    .cursor_pointer {
+      cursor: pointer;
+    }
+
+    .cursor_move {
+      cursor: move;
+      -moz-user-select: none;
+    }
+
+    .opacity_40 {
+      opacity: 0.4;
+      -moz-opacity: 0.4;
+      filter: alpha(opacity=40);
+    }
+
+    .drag_hover_class {
+      border-color: #009900;
+      background-color: #CCFFCC;
+    }
+  </style>
+</head>
+<body>
+<h1>draglist test</h1>
+
+<table>
+<tr>
+    <td><div id="vert1_div" class="vert1_class"></td>
+    <td><div id="vert1_div" class="vert1_class"></td>
+    <td><div id="vert1_div" class="vert1_class"></td>
+</tr>
+</table>
+
+<h2>select from here</h2>
+<div id="horiz1_div" class="horiz1_class">
+    <div class="red_box">1</div>
+    <div class="red_box">2</div>
+    <div class="red_box">3</div>
+    <div class="red_box">4</div>
+    <div class="red_box">5</div>
+    <div class="red_box">6</div>
+    <div class="empty_box">X</div>
+    <div class="empty_box">X</div>
+  </div>
+ <script>
+  var dlg = new goog.fx.DragListGroup();
+  dlg.setDragItemHoverClass('cursor_move');
+  dlg.setDraggerElClass('cursor_move opacity_40');
+
+  dlg.addDragList(goog.dom.getElement('horiz1_div'),
+      goog.fx.DragListDirection.RIGHT_2D);
+
+  //dlg.setIsCurrDragItemAlwaysDisplaye:
+  //dlg.setNoUpdateWhileDragging;
+  dlg.init();
+
+  </script>
+</body>
+</html>
+
