@@ -1,0 +1,3 @@
+@def MARGIN 10px;
+h1 { margin-left: MARGIN }
+h1 { margin-right: MARGIN }
