@@ -1,12 +1,20 @@
 package Scribbled::Accessor;
-sub import{
-    my ($self, @metheds) = @_;
+use warnings;
+sub import {
+    my ($self, @methods) = @_;
     my $caller = caller;
-    *{ $caller . "::new" } = sub { return bless [], $_[0] };
-    for my $index ( 0 .. scalar @metheds ){
-        my $meth = $metheds[$index];
-        *{ $caller . "::set_$meth" } = sub { $_[0]->[$index] = $_[1];$_[0] };
-        *{ $caller . "::get_$meth" } = sub { $_[0]->[$index] };
+
+    *{ $caller . "::new" } = sub { 
+        my $class = shift;
+        my %params = (@_ == 1 && ref($_[0]) eq 'HASH' ? %{$_[0]} : @_);
+        return bless [ @params{@methods} ], $class;
+    };
+
+    for my $index ( 0 .. $#methods ){
+        my $meth = $methods[$index];
+        *{ $caller . "::set_" . $meth } = sub { $_[0]->[$index] = $_[1];$_[0] };
+        *{ $caller . "::get_" . $meth } = sub { $_[0]->[$index] };
     }
 }
+
 1;
