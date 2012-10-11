@@ -24,7 +24,7 @@ module.exports.find = function(colName, query, callback) {
         var cursor = client.collection(colName).find(query);
 
         cursor.explain(function(err, explain) {
-            console.log(err, explain);
+            console.log('find:', explain);
         });
         
         cursor.toArray(function(err, items) {
@@ -49,14 +49,14 @@ module.exports.list = function(colName, data, callback) {
             _id: 1
         };
 
-        var cursor = client.collection(colName).find(selector);
+        // On a query using skip() and limit(), count ignores these parameters by default. 
+        var cursor = client.collection(colName).find(selector).sort(sort).skip((page - 1) * size).limit(size);
+
         cursor.explain(function(err, explain) {
-            console.log('count:',explain);
+            console.log('list:',explain);
         });
         
-        // TODO: count と toArray を並列実行したい
-        //       数値が正確にとれるとは断言できないのでatomic にできないか考える
-        //       MySQLFoundRows みたいなのないかね
+        // XXX: MySQLFoundRows みたいなのないかね
         cursor.count(function(err, count) {
 
             if (err) {
@@ -65,11 +65,6 @@ module.exports.list = function(colName, data, callback) {
 
             var maxpage = (count === 0) ? 1 : Math.ceil(count / size);
 
-            cursor.sort(sort).skip((page - 1) * size).limit(size);
-            cursor.explain(function(err, explain) {
-                console.log('list:',explain);
-            });
-            
             cursor.toArray(function(err, items) {
 
                 if (err) {
@@ -85,7 +80,7 @@ module.exports.list = function(colName, data, callback) {
                     sort: sort,
                     list: items
                 });
-
+            
                 client.close();
             });
         });

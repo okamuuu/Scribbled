@@ -11,7 +11,7 @@ describe('testing mongo library', function() {
             var cursor = _client.collection('Users').find({});
             
             cursor.explain(function(err, explain) {
-                console.log(err, explain);
+//                console.log(err, explain);
             });
 
             cursor.toArray(function(err, items) {
