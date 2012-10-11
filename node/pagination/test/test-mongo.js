@@ -8,14 +8,16 @@ describe('testing mongo library', function() {
 
         mongo.db.open(function(err, _client) {
 
-            _client.collection('Users', function(err, collection) {
+            var cursor = _client.collection('Users').find({});
+            
+            cursor.explain(function(err, explain) {
+                console.log(err, explain);
+            });
 
-                var cursor = collection.find({});
-                cursor.toArray(function(err, items) {
-                    assert.ok(items.length === 1000);
-                    _client.close();
-                    done();
-                });
+            cursor.toArray(function(err, items) {
+                assert.ok(items.length === 1000);
+                _client.close();
+                done();
             });
         });
     });

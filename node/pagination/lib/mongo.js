@@ -21,21 +21,15 @@ module.exports.find = function(colName, query, callback) {
             return callback(err);
         }
 
-        client.collection(colName, function(err, collection) {
+        var cursor = client.collection(colName).find(query);
 
-            if (err) {
-                return callback(err);
-            }
-
-            collection.find(query, function(err, result) {
-
-                if (err) {
-                    return callback(err);
-                }
-
-                callback(null, result);
-                client.close();
-            });
+        cursor.explain(function(err, explain) {
+            console.log(err, explain);
+        });
+        
+        cursor.toArray(function(err, items) {
+            callback(null, items);
+            client.close();
         });
     });
 };
@@ -48,46 +42,51 @@ module.exports.list = function(colName, data, callback) {
             return callback(err);
         }
 
-        client.collection(colName, function(err, collection) {
+        var page = data.page ? Math.max(1, data.page) : 1;
+        var size = data.size ? Math.max(1, data.size) : 20;
+        var selector = data.selector || {};
+        var sort = data.sort || {
+            _id: 1
+        };
+
+        var cursor = client.collection(colName).find(selector);
+        cursor.explain(function(err, explain) {
+            console.log('count:',explain);
+        });
+        
+        // TODO: count と toArray を並列実行したい
+        //       数値が正確にとれるとは断言できないのでatomic にできないか考える
+        //       MySQLFoundRows みたいなのないかね
+        cursor.count(function(err, count) {
 
             if (err) {
                 return callback(err);
             }
 
-            var page = data.page ? Math.max(1, data.page) : 1;
-            var size = data.size ? Math.max(1, data.size) : 20;
-            var selector = data.selector || {};
-            var sort = data.sort || {
-                _id: 1
-            };
+            var maxpage = (count === 0) ? 1 : Math.ceil(count / size);
 
-            var result = {
-                page: page,
-                size: size,
-                selector: selector,
-                sort: sort
-            };
+            cursor.sort(sort).skip((page - 1) * size).limit(size);
+            cursor.explain(function(err, explain) {
+                console.log('list:',explain);
+            });
+            
+            cursor.toArray(function(err, items) {
 
-            collection.find({}).count(function(err, count) {
-                    
                 if (err) {
                     return callback(err);
                 }
 
-                result.max = count;
-                result.maxpage = (result.max === 0) ? 1 : Math.ceil(result.max / result.size);
-
-                collection.find(selector).sort(sort).skip((page - 1) * size).limit(size).toArray(function(err, items) {
-
-                    if (err) {
-                        return callback(err);
-                    }
-
-                    result.list = items;
-
-                    callback(null, result);
-                    client.close();
+                callback(null, {
+                    max: count,
+                    maxpage: maxpage,
+                    page: page,
+                    size: size,
+                    selector: selector,
+                    sort: sort,
+                    list: items
                 });
+
+                client.close();
             });
         });
     });
