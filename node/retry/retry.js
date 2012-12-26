@@ -1,5 +1,9 @@
 function retry(count, iterator, callback) {
 
+    if (isNaN(count) || typeof count !== 'number') {
+        return callback(new Error('count is not Number!!'));
+    }
+
     var iterate = function() {
             
             iterator(function(err, result) {
@@ -21,19 +25,20 @@ function retry(count, iterator, callback) {
     iterate();
 }
 
-var _err = 10;
+var tryCount = 0;
 
 retry(3, function(next) {
 
-    if ( _err < 0 ) {
+    if ( ++tryCount !== 3 ) {
+        console.log('err');
         return next('err');
     }
-    next(null);
+    next(null, 'ok');
+
 }, function(err, result) {
 
     if (err) {
-        console.log(err);
+        return console.log(err);
     }
-
-    //console.log('ok!!');
+    console.log(null, result);
 });
